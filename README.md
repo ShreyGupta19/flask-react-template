@@ -1,5 +1,7 @@
 # flask-react-template
-A ready-to-go template for basic full stack Web applications using Flask and React. Simply:
+A ready-to-go template for basic full stack Web applications using Flask and React. Uses Webpack for static module bundling.
+
+To use, simply:
 
 1) Clone this repo.
 2) Spin off a python virtualenv.
