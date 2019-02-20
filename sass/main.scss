@@ -1,0 +1,31 @@
+@import "custom";
+@import "~bootstrap/scss/bootstrap";
+
+.app {
+  margin: 10vh auto;
+  max-width: 500px;
+  height: 80vh;
+  
+  h1 {
+    text-align: center;
+  }
+
+  ul.errorList {
+    list-style-type: none;
+  }
+
+  .list {
+    ul {
+      list-style-type: none;
+      padding-left: 0;
+    }
+
+    input[type="checkbox"] {
+      margin-right: 10px;
+    }
+  }
+
+  .addForm {
+    
+  }
+}

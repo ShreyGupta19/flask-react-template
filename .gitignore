@@ -3,6 +3,10 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# Settings
+settings/dev.py
+settings/prod.py
+
 # Distribution/packaging
 .Python
 env/
@@ -34,11 +38,11 @@ ENV/
 # IntelliJ/PyCharm
 .idea/
 
-# Webpack
-static/dist
+# Distribution
+static
 
 # Node + NPM
-static/node_modules
+node_modules
 
 # Misc
 .DS_Store
