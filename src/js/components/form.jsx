@@ -47,12 +47,13 @@ export default class Form extends React.Component {
                 name="todo"
                 placeholder="New todo here!"
               />
-              <span className={sty.inputGroupBtn}>
+              <div className={sty.inputGroupAppend}>
                 <button 
                   type="submit" 
-                  className={[sty.btn, sty.btnDefault, sty.btnLg].join(' ')}
+                  className={[sty.btn, sty.btnDefault, sty.btnLg, 
+                    sty.btnOutlineSecondary].join(' ')}
                 >+</button>
-              </span>
+              </div>
             </div>
           </div>
         </form>
