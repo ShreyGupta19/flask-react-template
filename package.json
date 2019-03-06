@@ -4,9 +4,9 @@
   "description": "A web app made with Flask, React, and Postgres.",
   "main": "bundle.js",
   "scripts": {
-    "dev-build": "webpack --progress --config tasks/webpack.dev.js",
-    "prod-build": "webpack --progress --config tasks/webpack.prod.js",
-    "watch": "webpack --progress --config tasks/webpack.dev.js --watch",
+    "dev-build": "gulp webpack-dev",
+    "prod-build": "gulp webpack-prod",
+    "watch": "gulp watch",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -28,37 +28,30 @@
     "react-dom": "^16.2.0"
   },
   "devDependencies": {
-    "autoprefixer": "^9.4.7",
     "babel-core": "^6.26.0",
     "babel-loader": "^7.1.2",
     "babel-preset-env": "^1.6.1",
     "babel-preset-flow": "^6.23.0",
     "babel-preset-react": "^6.24.1",
-    "browser-sync": "^2.7.12",
     "css-loader": "^0.28.11",
     "del": "^2.0.2",
     "gulp": "^4.0.0",
-    "gulp-autoprefixer": "^3.1.0",
-    "gulp-cache": "^0.4.1",
     "gulp-cssnano": "^2.1.0",
-    "gulp-if": "^2.0.0",
+    "gulp-htmlmin": "^5.0.1",
     "gulp-imagemin": "^5.0.3",
-    "gulp-sass": "^3.0.0",
-    "gulp-sourcemaps": "^1.5.2",
     "gulp-uglify-es": "^1.0.4",
-    "gulp-useref": "^3.0.4",
     "mini-css-extract-plugin": "^0.5.0",
     "node-sass": "^4.11.0",
     "postcss-loader": "^3.0.0",
     "precss": "^4.0.0",
-    "run-sequence": "^1.1.2",
     "sass-loader": "^7.1.0",
     "style-loader": "^0.19.1",
     "webpack": "^4.29.5",
     "webpack-cli": "^3.2.3",
     "webpack-dev-middleware": "^3.6.0",
     "webpack-hot-middleware": "^2.24.3",
-    "webpack-merge": "^4.2.1"
+    "webpack-merge": "^4.2.1",
+    "webpack-stream": "^5.2.1"
   },
   "babel": {
     "presets": [

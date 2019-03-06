@@ -1,98 +1,87 @@
-// From https://github.com/zellwk/gulp-starter-csstricks
+const cssnano = require('gulp-cssnano');
+const del = require('del');
+const gulp = require('gulp');
+const htmlmin = require('gulp-htmlmin');
+const uglify = require('gulp-uglify-es').default;
+const webpack = require('webpack-stream');
 
-var gulp = require('gulp');
-var sass = require('gulp-sass');
-var browserSync = require('browser-sync');
-var useref = require('gulp-useref');
-var uglify = require('gulp-uglify-es').default;
-var gulpIf = require('gulp-if');
-var cssnano = require('gulp-cssnano');
-var imagemin = require('gulp-imagemin');
-var cache = require('gulp-cache');
-var del = require('del');
-var runSequence = require('run-sequence');
+///////////////////////
+// Development Tasks //
+///////////////////////
 
-// Development Tasks
-// -----------------
+// Bundle CSS and JS(X) for development
+gulp.task('webpack-dev', function () {
+  return gulp.src('src/js/**/*.+(js|jsx)')
+    .pipe(webpack(require('./webpack/webpack.dev.js')))
+    .pipe(gulp.dest('src/static/'));
+});
 
-// Start browserSync server
-gulp.task('browserSync', function() {
-  browserSync({
-    server: {
-      baseDir: 'app'
-    }
-  })
+// Clean dist
+gulp.task('dev-clean', function () {
+  return del('src/static');
+});
+
+// Watch static and template file changes
+gulp.task('watch', function () {
+  gulp.watch(['src/js/**/*', 'src/sass/**/*'], gulp.series(['webpack-dev']));
 })
 
-// Compile SASS files
-gulp.task('sass', function() {
-  return gulp.src(['app/scss/**/*.scss', '!app/scss/base.scss'])
-    .pipe(sass().on('error', sass.logError))
-    .pipe(gulp.dest('app/css'))
-    .pipe(browserSync.reload({
-      stream: true
-    }));
-})
+//////////////////////
+// Production Tasks //
+//////////////////////
 
-// Watchers
-gulp.task('watch', function() {
-  gulp.watch('app/scss/**/*.scss', ['sass']);
-  gulp.watch('app/*.html', browserSync.reload);
-  gulp.watch('app/js/**/*.js', browserSync.reload);
-})
+// Bundle CSS and JS(X) for production
+gulp.task('webpack-prod', function () {
+  return gulp.src('src/js/**/*.+(js|jsx)')
+    .pipe(webpack(require('./webpack/webpack.prod.js')))
+    .pipe(gulp.dest('dist/'));
+});
 
-// Optimization Tasks
-// ------------------
-
-// Optimizing CSS and JavaScript
-gulp.task('useref', function() {
-  return gulp.src('app/*.html')
-    .pipe(useref())
-    .pipe(gulpIf('*.js', uglify()))
-    .pipe(gulpIf('*.css', cssnano()))
+// Optimize JavaScript
+gulp.task('optimize-js', function () {
+  return gulp.src('dist/*.js')
+    .pipe(uglify())
     .pipe(gulp.dest('dist'));
 });
 
-// Optimizing Images
-gulp.task('images', function() {
-  return gulp.src('app/media/**/*.+(png|jpg|jpeg|gif|svg)')
-    .pipe(cache(imagemin({
+// Optimize JavaScript
+gulp.task('optimize-css', function () {
+  return gulp.src('dist/*.css')
+    .pipe(cssnano())
+    .pipe(gulp.dest('dist'));
+});
+
+// Optimize HTML
+gulp.task('optimize-html', () => {
+  return gulp.src('src/templates/*.html')
+    .pipe(htmlmin({ collapseWhitespace: true }))
+    .pipe(gulp.dest('dist'));
+});
+
+// Copy media
+gulp.task('copy-media', function () {
+  return gulp.src('src/media/**/*')
+    .pipe(gulp.dest('dist'))
+});
+
+// Optimize Images
+gulp.task('optimize-images', function () {
+  return gulp.src('dist/imgs/**/*.+(png|jpg|jpeg|gif|svg)')
+    .pipe(imagemin({
       interlaced: true,
-    })))
-    .pipe(gulp.dest('dist/media'))
+    }))
+    .pipe(gulp.dest('dist/imgs'))
 });
 
-// Copying fonts
-gulp.task('fonts', function() {
-  return gulp.src('app/fonts/**/*')
-    .pipe(gulp.dest('dist/fonts'))
-})
-
-// Cleaning
-gulp.task('clean', function() {
-  return del.sync('dist').then(function(cb) {
-    return cache.clearAll(cb);
-  });
-})
-
-gulp.task('clean:dist', function() {
-  return del.sync(['dist/**/*', '!dist/media', '!dist/media/**/*']);
+// Clean dist
+gulp.task('prod-clean', function () {
+  return del('dist');
 });
 
-// Build Sequences
-// ---------------
-
-gulp.task('default', function(callback) {
-  runSequence(['sass', 'browserSync'], 'watch',
-    callback
-  )
-})
-
-gulp.task('build', function(callback) {
-  runSequence(
-    'clean:dist',
-    'sass',
-    ['useref', 'images', 'fonts'],
-    callback
-  )
-})
+// Build and optimize prod
+gulp.task('prod-build', gulp.series(
+  'prod-clean',
+  'webpack-prod',
+  gulp.parallel('optimize-js', 'optimize-css', 'optimize-html', 'copy-media'),
+  'optimize-images'
+));
