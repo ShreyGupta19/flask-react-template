@@ -44,5 +44,8 @@ static
 # Node + NPM
 node_modules
 
+# Secrets
+.env
+
 # Misc
 .DS_Store
