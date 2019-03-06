@@ -2,16 +2,15 @@ const path = require('path');
 const webpack = require('webpack');
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
-// TODO: Take the value passed down by gulp.
-const devMode = process.env.NODE_ENV !== 'production';
+const basePath = path.resolve(__dirname, '..', 'src/');
 
 const config = {
+  context: basePath,
   entry: {
-    'index': __dirname + '/src/js/index.jsx',
-    'login': __dirname + '/src/js/login.js',
+    'index': './js/index.jsx',
+    'login': './js/login.js',
   }, 
   output: {
-    path: path.resolve(__dirname, 'src', 'static'),
     filename: '[name].js',
   },
   resolve: {
@@ -21,7 +20,7 @@ const config = {
     rules: [
       {
         test: /\.jsx?/,
-        exclude: path.resolve(__dirname, 'src', 'node_modules'),
+        exclude: path.resolve(basePath, '..', 'node_modules'),
         use: {
           loader: 'babel-loader'
         }
@@ -29,17 +28,6 @@ const config = {
       {
         test: /\.s(a|c)ss$/,
         use: [
-          {
-            loader: devMode ? 'style-loader' : MiniCssExtractPlugin.loader,
-          },
-          {
-            loader: 'css-loader',
-            options: {
-              modules: true,
-              localIdentName: devMode ? '[local]' : '[name]__[local]__[hash:base64:5]',
-              camelCase: 'dashes',
-            }
-          },
           {
             loader: 'postcss-loader',
             options: {
@@ -55,7 +43,7 @@ const config = {
             loader: 'sass-loader',
             options: {
               includePaths: [
-                path.resolve(__dirname, 'src', 'sass')
+                path.resolve('sass')
               ]
             }
           }, 
@@ -63,10 +51,6 @@ const config = {
       },
     ]
   },
-  plugins: [
-    new MiniCssExtractPlugin({
-      filename: "[name].css",
-    }),
-  ]
 };
+
 module.exports = config;
