@@ -1,10 +1,11 @@
 import datetime
 
+from flask_login import UserMixin
 from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
 
-class User(db.Model):
+class User(UserMixin, db.Model):
   id = db.Column(db.Integer, primary_key=True)
   username = db.Column(db.String(120), unique=True, nullable=False)
   pass_hash = db.Column(db.LargeBinary(32), nullable=False)
@@ -19,6 +20,11 @@ class Todo(db.Model):
   done = db.Column(db.Boolean, nullable=False, default=False)
   add_date = db.Column(db.DateTime, nullable=False,
       default=datetime.datetime.utcnow)
+
+  user_id = db.Column(db.Integer, db.ForeignKey('user.id'),
+      nullable=False)
+  user = db.relationship('User',
+      backref=db.backref('todos', lazy=True))
 
   def __repr__(self):
       return '<Todo {} ({})>'.format(self.text, self.done)

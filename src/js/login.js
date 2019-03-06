@@ -23,4 +23,4 @@ $(document).ready(function (){
       $('#login-error').css('display', 'block').html(error);
     });
   });
-}) ;
+});

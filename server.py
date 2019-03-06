@@ -9,6 +9,7 @@ from settings.prod import settings as prod_settings
 from settings.dev import settings as dev_settings
 
 from flask import Flask, Response, redirect, render_template, request, url_for
+from flask_login import LoginManager, current_user, login_required, login_user
 
 SALT_SIZE = 32
 
@@ -36,9 +37,17 @@ if __name__ == '__main__':
     db=settings.DB_NAME
   )
   app.config['SQLALCHEMY_DATABASE_URI'] = db_url
+  app.config['SECRET_KEY'] = 'you-will-never-guess'
   with app.app_context():
     m.db.init_app(app)
     m.db.create_all()
+
+  login_manager = LoginManager(app)
+  login_manager.login_view = 'login'
+
+  @login_manager.user_loader
+  def load_user(user_id):
+    return m.User.query.get(user_id)
 
   @app.route('/login', methods=['GET', 'POST'])
   def login():
@@ -70,6 +79,7 @@ if __name__ == '__main__':
           mimetype='application/json'
         )
 
+      login_user(user)
       return Response(
           json.dumps({
             'ts': str(datetime.datetime.utcnow()),
@@ -78,20 +88,22 @@ if __name__ == '__main__':
           status=200,
           mimetype='application/json'
         )
-
-
+  
   @app.route('/', methods=['GET'])
+  @login_required
   def index():
     return render_template('index.html')
 
   @app.route('/todos', methods=['GET', 'POST'])
+  @login_required
   def todos():
     if request.method == 'GET':
       todo_id = request.args.get('id', None)
       if todo_id is None:
-        data = m.Todo.query.all()
+        data = m.Todo.query.filter_by(user_id=current_user.id)
       else:
-        data = [m.Todo.query.filter_by(id=todo_id).first()]
+        data = [m.Todo.query.filter_by(id=todo_id, 
+                                       user_id=current_user.id).first()]
       return Response(
         json.dumps({
           'data': [t.serialized for t in data],
@@ -101,7 +113,7 @@ if __name__ == '__main__':
         mimetype='application/json'
       )
     else:
-      t = m.Todo(text=request.get_json()['todo'])
+      t = m.Todo(text=request.get_json()['todo'], user_id=current_user.id)
       m.db.session.add(t)
       m.db.session.commit()
       return Response(
@@ -114,9 +126,18 @@ if __name__ == '__main__':
       )
 
   @app.route('/todos/done', methods=['POST'])
+  @login_required
   def todos_done():
     todo_id = request.get_json()['id']
-    t = m.Todo.query.filter_by(id=todo_id).first()
+    t = m.Todo.query.filter_by(id=todo_id, user_id=current_user.id).first()
+    if t is None:
+      return Response(
+        json.dumps({
+          'ts': str(datetime.datetime.utcnow()),
+        }),
+        status=401,
+        mimetype='application/json'
+      )
     t.done = not t.done
     m.db.session.add(t)
     m.db.session.commit()
