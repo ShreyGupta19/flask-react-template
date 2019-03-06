@@ -1,13 +1,9 @@
 # flask-react-template
-A ready-to-go template for basic full stack Web applications using Flask and React. Uses Webpack for static module bundling.
+A ready-to-go template for fairly robust full stack Web applications using Flask, React, and Postgres. Uses Webpack for static module bundling and Gulp for task running. Comes with a lightweight authentication system.
 
 To use, simply:
 
 1) Clone this repo.
 2) Spin off a python virtualenv.
 3) Run `pip install -r requirements.txt`.
-4) Add your name and the current year to `LICENSE`.
-5) `cd` into static and run `npm install`.
-6) Add your name and contact, app name, and app description to `package.json`.
-
-Note: `.gitkeep` files have been placed in otherwise empty directories. These exist only to circumvent Git's default behavior of ignoring empty directories; these can safely be deleted.
+4) Run `npm install`.
