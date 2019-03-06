@@ -1,6 +1,6 @@
 import React from "react";
 import * as strings from '../strings';
-import sty from '../../sass/main.scss';
+import sty from '../../sass/index.scss';
 
 export default class Form extends React.Component {
   constructor (props) {
@@ -48,9 +48,9 @@ export default class Form extends React.Component {
                 placeholder="New todo here!"
               />
               <div className={sty.inputGroupAppend}>
-                <button 
+                <button
                   type="submit" 
-                  className={[sty.btn, sty.btnDefault, sty.btnLg, 
+                  className={[sty.btn, sty.btnDefault, sty.btnLg,
                     sty.btnOutlineSecondary].join(' ')}
                 >+</button>
               </div>

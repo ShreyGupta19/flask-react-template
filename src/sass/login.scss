@@ -1,0 +1,14 @@
+@import "custom";
+@import "~bootstrap/scss/bootstrap";
+
+#content {
+  margin: 10vh auto;
+  max-width: 500px;
+  height: 80vh;
+  
+  h1 {
+    text-align: center;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+  }
+}

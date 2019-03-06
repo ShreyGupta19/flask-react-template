@@ -1,15 +1,18 @@
 import argparse
 import datetime
+import hashlib
 import json
+import secrets
 
 import models as m
 from settings.prod import settings as prod_settings
 from settings.dev import settings as dev_settings
 
-from flask import Flask, render_template, request, Response
+from flask import Flask, Response, redirect, render_template, request, url_for
 
+SALT_SIZE = 32
 
-if __name__ == "__main__":
+if __name__ == '__main__':
   parser = argparse.ArgumentParser(
     description='Run a server for a Flask-React-MongoDB web application.')
   parser.add_argument('-d', '--deploy_mode', default='prod',
@@ -17,9 +20,9 @@ if __name__ == "__main__":
     help='Mode to deploy the server in (i.e. settings file to use).'
   )
   args = parser.parse_args()
-  if args.deploy_mode == "prod":
+  if args.deploy_mode == 'prod':
     settings = prod_settings
-  elif args.deploy_mode == "dev":
+  elif args.deploy_mode == 'dev':
     settings = dev_settings
     # TODO: Add in FLASK_ENV=development env var
 
@@ -37,11 +40,51 @@ if __name__ == "__main__":
     m.db.init_app(app)
     m.db.create_all()
 
-  @app.route("/", methods=['GET'])
-  def index():
-    return render_template("index.html")
+  @app.route('/login', methods=['GET', 'POST'])
+  def login():
+    if request.method == 'GET':
+      return render_template('login.html')
+    else:
+      creds = request.get_json()
+      user = m.User.query.filter_by(username=creds['email']).first()
+      if user is None:
+        salt = secrets.token_bytes(SALT_SIZE)
+      else:
+        salt = user.pass_salt
+      hasher = hashlib.sha256()
+      hasher.update(creds['pass'].encode())
+      hasher.update(salt)
+      pass_hash = hasher.digest()
+      if user is None:
+        user = m.User(username=creds['email'],
+                      pass_hash = pass_hash,
+                      pass_salt = salt)
+        m.db.session.add(user)
+        m.db.session.commit()
+      elif user.pass_hash != pass_hash:
+        return Response(
+          json.dumps({
+            'ts': str(datetime.datetime.utcnow()),
+          }),
+          status=401,
+          mimetype='application/json'
+        )
 
-  @app.route("/todos", methods=['GET', 'POST'])
+      return Response(
+          json.dumps({
+            'ts': str(datetime.datetime.utcnow()),
+            'location': url_for('index'),
+          }),
+          status=200,
+          mimetype='application/json'
+        )
+
+
+  @app.route('/', methods=['GET'])
+  def index():
+    return render_template('index.html')
+
+  @app.route('/todos', methods=['GET', 'POST'])
   def todos():
     if request.method == 'GET':
       todo_id = request.args.get('id', None)
@@ -70,7 +113,7 @@ if __name__ == "__main__":
         mimetype='application/json'
       )
 
-  @app.route("/todos/done", methods=['POST'])
+  @app.route('/todos/done', methods=['POST'])
   def todos_done():
     todo_id = request.get_json()['id']
     t = m.Todo.query.filter_by(id=todo_id).first()

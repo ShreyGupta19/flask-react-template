@@ -1,6 +1,6 @@
 import React from "react";
 import * as strings from '../strings';
-import styles from '../../sass/main.scss';
+import styles from '../../sass/index.scss';
 
 export default class List extends React.Component {
   markStatus (todoId) {

@@ -3,7 +3,7 @@ import ReactDOM from "react-dom";
 import Form from "./components/form"
 import List from "./components/list"
 import 'bootstrap';
-import styles from '../sass/main.scss';
+import styles from '../sass/index.scss';
 
 class TodoApp extends React.Component {
   constructor (props) {

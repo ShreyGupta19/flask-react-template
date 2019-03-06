@@ -6,10 +6,13 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const devMode = process.env.NODE_ENV !== 'production';
 
 const config = {
-  entry:  __dirname + '/src/js/index.jsx',
+  entry: {
+    'index': __dirname + '/src/js/index.jsx',
+    'login': __dirname + '/src/js/login.js',
+  }, 
   output: {
     path: path.resolve(__dirname, 'src', 'static'),
-    filename: 'bundle.js',
+    filename: '[name].js',
   },
   resolve: {
     extensions: ['.js', '.jsx', '.scss']
@@ -62,7 +65,7 @@ const config = {
   },
   plugins: [
     new MiniCssExtractPlugin({
-      filename: 'style.css',
+      filename: "[name].css",
     }),
   ]
 };
