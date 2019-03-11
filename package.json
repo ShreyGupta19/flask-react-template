@@ -4,8 +4,8 @@
   "description": "A web app made with Flask, React, and Postgres.",
   "main": "bundle.js",
   "scripts": {
-    "dev-build": "gulp webpack-dev",
-    "prod-build": "gulp webpack-prod",
+    "dev-build": "gulp dev-build",
+    "prod-build": "gulp prod-build",
     "watch": "gulp watch",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
